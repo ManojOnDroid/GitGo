@@ -15,7 +15,10 @@ import androidx.navigation.compose.rememberNavController
 import com.example.gitgo.homeScreen.screen.HomeScreen
 import com.example.gitgo.searchScreen.screen.SearchScreen
 import com.example.gitgo.ui.theme.GitGoTheme
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.HiltAndroidApp
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

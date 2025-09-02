@@ -2,6 +2,10 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+
+    // dagger-hilt plugins
+    alias(libs.plugins.kotlin.ksp)
+    alias(libs.plugins.hilt.gradle.plugin)
 }
 
 android {
@@ -50,6 +54,25 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.navigation.compose)
+
+    // dagger-hilt dependencies
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+
+    //retrofit dependencies
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+
+    //http logging interceptor dependency
+    implementation(libs.logging.interceptor)
+
+    // for hiltViewModel()
+    implementation(libs.androidx.hilt.navigation.compose)
+
+    implementation(libs.compose)
+    implementation (libs.androidx.compose.material.icons.extended)
+
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
