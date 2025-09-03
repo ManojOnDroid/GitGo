@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -19,6 +22,8 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        val githubTokenValue = getLocalProperty("GITHUB_TOKEN", project)
+        buildConfigField("String", "GITHUB_TOKEN", "\"${githubTokenValue.replace("\"", "\\\"")}\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -40,6 +45,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -71,7 +77,7 @@ dependencies {
 
     implementation(libs.compose)
     implementation (libs.androidx.compose.material.icons.extended)
-
+    implementation(libs.androidx.paging.compose)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -81,3 +87,23 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
+
+
+fun getLocalProperty(key: String, project: Project): String {
+    val localPropertiesFile = project.rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        val properties = Properties()
+        try {
+            FileInputStream(localPropertiesFile).use { input ->
+                properties.load(input)
+            }
+            return properties.getProperty(key, "")
+        } catch (e: Exception) {
+            project.logger.warn("Could not load local.properties", e)
+        }
+    } else {
+        project.logger.warn("local.properties file not found in root project.")
+    }
+    return ""
+}
+

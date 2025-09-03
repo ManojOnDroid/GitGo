@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.gitgo.components.network.models.GitHubSearchRepoModel
+import com.example.gitgo.ui.theme.GitGoTheme
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -26,7 +27,7 @@ fun RepoCardComposable(repo: GitHubSearchRepoModel.Item) {
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(6.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = GitGoTheme.colors.card
         )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -44,12 +45,13 @@ fun RepoCardComposable(repo: GitHubSearchRepoModel.Item) {
                         text = repo.fullName ?: repo.name ?: "Unknown Repo",
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold
-                        )
+                        ),
+                        color = GitGoTheme.colors.textColor
                     )
                     Text(
                         text = repo.owner?.login ?: "Unknown Owner",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = GitGoTheme.colors.textColor
                     )
                 }
             }
@@ -60,7 +62,8 @@ fun RepoCardComposable(repo: GitHubSearchRepoModel.Item) {
                 Text(
                     text = it,
                     style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 2
+                    maxLines = 2,
+                    color = GitGoTheme.colors.textColor
                 )
             }
 
@@ -71,14 +74,16 @@ fun RepoCardComposable(repo: GitHubSearchRepoModel.Item) {
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Icon(Icons.Filled.Star, contentDescription = "Stars")
-                Text(text = "${repo.stargazersCount ?: 0}")
+                Text(text = "${repo.stargazersCount ?: 0}",color = GitGoTheme.colors.textColor
+                )
 
                 Icon(Icons.Filled.ForkRight, contentDescription = "Forks")
-                Text(text = "${repo.forksCount ?: 0}")
+                Text(text = "${repo.forksCount ?: 0}",color = GitGoTheme.colors.textColor
+                )
 
                 repo.license?.name?.let { license ->
                     Icon(Icons.Filled.Info, contentDescription = "License")
-                    Text(text = license)
+                    Text(text = license,color = GitGoTheme.colors.textColor)
                 }
             }
 
@@ -89,7 +94,7 @@ fun RepoCardComposable(repo: GitHubSearchRepoModel.Item) {
                 Text(
                     text = "Last updated: $it",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = GitGoTheme.colors.textColor
                 )
             }
         }
