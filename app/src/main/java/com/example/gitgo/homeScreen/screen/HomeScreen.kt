@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.gitgo.ui.theme.GitGoTheme
 
 
 @Composable
@@ -29,14 +30,15 @@ fun HomeScreen(
         contentAlignment = Alignment.Center
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = "Welcome", style = MaterialTheme.typography.headlineMedium)
+            Text(text = "Welcome", style = MaterialTheme.typography.headlineMedium, color = GitGoTheme.colors.textColor)
             Spacer(modifier = Modifier.width(16.dp))
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "Search",
                 modifier = Modifier
                     .size(32.dp)
-                    .clickable { navController.navigate("search") }
+                    .clickable { navController.navigate("search") },
+                tint = GitGoTheme.colors.iconTint
             )
         }
     }

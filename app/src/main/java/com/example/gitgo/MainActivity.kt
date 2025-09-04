@@ -25,7 +25,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             GitGoTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold(modifier = Modifier.fillMaxSize(),
+                    containerColor = GitGoTheme.colors.surface) { innerPadding ->
                     GitHubExplorerApp(Modifier.padding(innerPadding))
                 }
             }

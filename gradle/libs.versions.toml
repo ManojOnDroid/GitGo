@@ -16,6 +16,7 @@ materialIconsExtended = "1.7.8"
 navigationCompose = "2.9.3"
 ksp = "2.2.10-2.0.2"
 hilt = "2.57.1"
+pagingCompose = "3.3.6"
 retrofit = "3.0.0"
 
 [libraries]
@@ -51,6 +52,7 @@ androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-com
 
 compose = { module = "com.github.bumptech.glide:compose", version.ref = "compose" }
 androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
+androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pagingCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

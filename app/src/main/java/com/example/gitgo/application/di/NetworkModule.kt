@@ -1,6 +1,7 @@
 package com.example.gitgo.application.di
 
 import androidx.compose.ui.text.style.LineBreak
+import com.example.gitgo.application.di.interceptor.AuthInterceptor
 import com.example.gitgo.application.properties.IpConfig
 import com.google.gson.GsonBuilder
 import com.google.gson.Strictness
@@ -30,6 +31,7 @@ object NetworkModule {
             .writeTimeout(3, TimeUnit.MINUTES)
             .callTimeout(3, TimeUnit.MINUTES)
             .connectTimeout(3, TimeUnit.MINUTES)
+            .addInterceptor(AuthInterceptor())
             .addInterceptor(loggingInterceptor)
             .build()
     }
