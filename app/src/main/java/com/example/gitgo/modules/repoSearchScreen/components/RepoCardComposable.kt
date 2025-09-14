@@ -1,5 +1,6 @@
-package com.example.gitgo.searchScreen.components
+package com.example.gitgo.modules.repoSearchScreen.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -12,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.gitgo.components.network.models.GitHubSearchRepoModel
@@ -19,11 +21,14 @@ import com.example.gitgo.ui.theme.GitGoTheme
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun RepoCardComposable(repo: GitHubSearchRepoModel.Item) {
+fun RepoCardComposable(repo: GitHubSearchRepoModel.Item, navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(8.dp)
+            .clickable{
+                navController.navigate("repoDetails/${repo.owner?.login}/${repo.name}")
+            },
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(6.dp),
         colors = CardDefaults.cardColors(
