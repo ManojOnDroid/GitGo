@@ -1,7 +1,9 @@
 package com.example.gitgo
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -34,9 +36,12 @@ import com.example.gitgo.components.constants.Destination
 import com.example.gitgo.components.constants.bottomNavItems
 import com.example.gitgo.modules.homeScreen.screen.HomeScreen
 import com.example.gitgo.modules.homeScreen.widgets.GitGoToolbar
+import com.example.gitgo.modules.loginScreen.screen.LoginScreen
+import com.example.gitgo.modules.profileScreen.screen.ProfileScreen
 import com.example.gitgo.modules.repoDetailScreen.screen.RepoDetailsScreen
 import com.example.gitgo.modules.repoIssuesScreen.screen.RepoIssuesScreen
 import com.example.gitgo.modules.repoSearchScreen.screen.RepoSearchScreen
+import com.example.gitgo.modules.settingsScreen.screen.SettingsScreen
 import com.example.gitgo.ui.theme.GitGoTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -44,16 +49,38 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val data: Uri? = intent?.data
+        if (data != null && data.scheme == "gitgo" && data.host == "callback") {
+            val code = data.getQueryParameter("code")
+            val state = data.getQueryParameter("state")
+
+            if (!code.isNullOrEmpty() && !state.isNullOrEmpty()) {
+                val prefs = getSharedPreferences("auth_prefs", MODE_PRIVATE)
+                prefs.edit()
+                    .putString("code", code)
+                    .putString("state", state)
+                    .apply()
+            }
+        }
+
         enableEdgeToEdge()
         setContent {
             GitGoTheme {
-                Scaffold {
-                    GitHubExplorerApp(Modifier.fillMaxSize().padding(it))
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    containerColor = GitGoTheme.colors.surface
+                ) { padding ->
+                    GitHubExplorerApp(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(padding)
+                    )
                 }
             }
         }
     }
 }
+
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -63,7 +90,7 @@ fun GitHubExplorerApp(modifier: Modifier) {
     var currentRoute by remember { mutableStateOf(Destination.HOME_SCREEN) }
     var toolbarTitle by remember { mutableStateOf("GitHub Explorer") }
     var showBackButton by remember { mutableStateOf(false) }
-    val startDestination = Destination.HOME_SCREEN
+    val startDestination = Destination.LOGIN_SCREEN
 
     LaunchedEffect(navController) {
         navController.currentBackStackEntryFlow.collect { backStackEntry ->
@@ -87,6 +114,18 @@ fun GitHubExplorerApp(modifier: Modifier) {
                     val repo = backStackEntry.arguments?.getString("repo") ?: "Repository"
                     toolbarTitle = "$repo Issues"
                     showBackButton = true
+                }
+                currentRoute == Destination.LOGIN_SCREEN -> {
+                    toolbarTitle = "Login"
+                    showBackButton = false
+                }
+                currentRoute == Destination.PROFILE_SCREEN -> {
+                    toolbarTitle = "Profile"
+                    showBackButton = true
+                }
+                currentRoute == Destination.SETTINGS_SCREEN -> {
+                    toolbarTitle = "Settings"
+                    showBackButton = false
                 }
                 else -> {
                     toolbarTitle = "GitHub Explorer"
@@ -203,10 +242,28 @@ fun GitHubExplorerApp(modifier: Modifier) {
                 composable(
                     route = Destination.SETTINGS_SCREEN,
                 ) {
-                    Box {
-                        Text(text = "Settings Screen",
-                            fontSize = 40.sp)
-                    }
+                    SettingsScreen(
+                        navController = navController,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                }
+
+                composable(
+                    route = Destination.LOGIN_SCREEN,
+                ) {
+                    LoginScreen(
+                        navController = navController,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                }
+
+                composable(
+                    route = Destination.PROFILE_SCREEN,
+                ) {
+                    ProfileScreen(
+                        navController = navController,
+                        modifier = Modifier.fillMaxSize(),
+                    )
                 }
             }
         }
