@@ -1,42 +1,37 @@
 package com.example.gitgo
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.example.gitgo.homeScreen.screen.HomeScreen
-import com.example.gitgo.searchScreen.screen.SearchScreen
+import com.example.gitgo.ui.screens.GitHubExplorerApp
 import com.example.gitgo.ui.theme.GitGoTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        handleDeepLink(intent?.data)
         enableEdgeToEdge()
         setContent {
             GitGoTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    GitHubExplorerApp(Modifier.padding(innerPadding))
-                }
+                    GitHubExplorerApp()
+            }
+        }
+    }
+    private fun handleDeepLink(data: Uri?) {
+        if (data != null && data.scheme == "gitgo" && data.host == "callback") {
+            val code = data.getQueryParameter("code")
+            val state = data.getQueryParameter("state")
+
+            if (!code.isNullOrEmpty() && !state.isNullOrEmpty()) {
+                getSharedPreferences("auth_prefs", MODE_PRIVATE).edit()
+                    .putString("code", code)
+                    .putString("state", state)
+                    .apply()
             }
         }
     }
 }
-
-
-@Composable
-fun GitHubExplorerApp(modifier: Modifier) {
-    val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "home") {
-        composable("home") { HomeScreen(navController,modifier) }
-        composable("search") { SearchScreen(navController,modifier) }
-    }
-}
-
