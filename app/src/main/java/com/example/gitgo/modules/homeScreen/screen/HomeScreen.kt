@@ -2,29 +2,54 @@ package com.example.gitgo.modules.homeScreen.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.AccountTree
+import androidx.compose.material.icons.filled.BugReport
+import androidx.compose.material.icons.filled.CallSplit
+import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.TrendingUp
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.WavingHand
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -34,8 +59,11 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.gitgo.modules.homeScreen.states.TrendingReposState
 import com.example.gitgo.modules.homeScreen.viewmodel.HomeScreenViewModel
-import com.example.gitgo.ui.theme.*
-import kotlin.math.roundToInt
+import com.example.gitgo.ui.theme.GitGoTheme
+import com.example.gitgo.ui.theme.errorBackground
+import com.example.gitgo.ui.theme.onPrimary
+import com.example.gitgo.ui.theme.primaryBackground
+
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -45,7 +73,6 @@ fun HomeScreen(
     viewModel: HomeScreenViewModel = hiltViewModel()
 ) {
     val trendingState by viewModel.repos.collectAsState()
-//    MultiStickyItemsInScrollColumn()
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -618,135 +645,6 @@ private fun formatCount(count: Int): String {
 
 private fun Double.format(digits: Int) = "%.${digits}f".format(this).trimEnd('0').trimEnd('.')
 
-
-@Composable
-fun StickyItemInScrollColumn() {
-    val scrollState = rememberScrollState()
-    val stickyIndex = 5 // 5th item (1-based)
-    val stickyIndex0 = stickyIndex - 1 // zero-based index
-
-    val itemHeight = 60.dp
-    val density = LocalDensity.current
-    val itemHeightPx = with(density) { itemHeight.toPx() }
-
-    // Compute the itemTop (in px) relative to the top of the scroll container
-    val itemTopPx by remember {
-        derivedStateOf {
-            stickyIndex0 * itemHeightPx - scrollState.value
-        }
-    }
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        // scrollable column with all items
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(scrollState)
-        ) {
-            repeat(30) { index ->
-                // hide original if it's stuck at top (to avoid duplicate)
-                val alpha = if (index == stickyIndex0 && itemTopPx <= 0f) 0f else 1f
-
-                Text(
-                    text = "Item ${index + 1}",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(itemHeight)
-                        .alpha(alpha)
-                        .background(if (index == stickyIndex0) Color.LightGray else Color.Transparent)
-                        .padding(16.dp)
-                )
-            }
-
-            // extra spacer so you can scroll past last item if needed
-            Spacer(modifier = Modifier.height(200.dp))
-        }
-
-        // Overlayed sticky item.
-        // Compute Y where overlay should be placed: if itemTopPx > 0 -> item still below top, place overlay at itemTopPx,
-        // otherwise place overlay at 0 to stick at top.
-        val overlayY = if (itemTopPx > 0f) itemTopPx else 0f
-
-        Text(
-            text = if (overlayY.roundToInt() == 0)"Item $stickyIndex" else "" ,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(itemHeight)
-                .background(if (overlayY.roundToInt() == 0)Color.LightGray else Color.Transparent)
-                .padding(16.dp)
-                .offset { IntOffset(0, overlayY.roundToInt()) } // position overlay
-        )
-    }
-}
-
-@Composable
-fun MultiStickyItemsInScrollColumn() {
-    val scrollState = rememberScrollState()
-    val stickyIndices = listOf(5, 10) // 1-based indices
-    val itemHeight = 60.dp
-    val density = LocalDensity.current
-    val itemHeightPx = with(density) { itemHeight.toPx() }
-
-    // Compute top positions for each sticky item
-    val itemTops by remember {
-        derivedStateOf {
-            stickyIndices.map { index ->
-                val zeroBased = index - 1
-                zeroBased * itemHeightPx - scrollState.value
-            }
-        }
-    }
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        // Scrollable content
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(scrollState)
-        ) {
-            repeat(30) { index ->
-                // Check if current item is one of the sticky ones
-                val stickyPos = stickyIndices.indexOf(index + 1)
-                val isSticky = stickyPos != -1
-                val alpha =
-                    if (isSticky && itemTops[stickyPos] <= 0f) 0f else 1f // hide original when overlaying
-
-                Text(
-                    text = "Item ${index + 1}",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(itemHeight)
-                        .alpha(alpha)
-                        .background(if (isSticky) Color.LightGray else Color.Transparent)
-                        .padding(16.dp)
-                )
-            }
-            Spacer(modifier = Modifier.height(200.dp))
-        }
-
-        // Figure out which sticky item should currently be visible
-        val activeStickyIndex = stickyIndices.indexOfLast { idx ->
-            val zeroBased = idx - 1
-            val topPx = zeroBased * itemHeightPx - scrollState.value
-            topPx <= 0f
-        }.takeIf { it != -1 }
-
-        activeStickyIndex?.let { stickyIdx ->
-            val topPx = itemTops[stickyIdx]
-            val overlayY = if (topPx > 0f) topPx else 0f
-
-            Text(
-                text = "Item ${stickyIndices[stickyIdx]}",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(itemHeight)
-                    .background(Color.LightGray)
-                    .padding(16.dp)
-                    .offset { IntOffset(0, overlayY.roundToInt()) }
-            )
-        }
-    }
-}
 
 
 

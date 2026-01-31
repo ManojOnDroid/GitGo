@@ -160,7 +160,6 @@ val darkGitGoColors = GitGoColors(
     isLight = false
 )
 
-// Extension functions for common color operations
 val GitGoColors.onPrimary: Color
     get() = if (isLight) Color.White else Color.Black
 
@@ -185,19 +184,3 @@ val GitGoColors.infoBackground: Color
 
 val GitGoColors.primaryBackground: Color
     get() = primary.copy(alpha = 0.1f)
-
-// Interactive states
-val GitGoColors.primaryPressed: Color
-    get() = if (isLight) primary.copy(alpha = 0.8f) else primary.copy(alpha = 1.2f)
-
-val GitGoColors.surfacePressed: Color
-    get() = if (isLight) Color(0xFFF0F0F0) else Color(0xFF2A2A2A)
-
-val GitGoColors.cardPressed: Color
-    get() = if (isLight) Color(0xFFF5F5F5) else Color(0xFF252525)
-
-val GitGoColors.toolbarContentColor: Color
-    get() = textColor
-
-val GitGoColors.toolbarIconColor: Color
-    get() = iconTint

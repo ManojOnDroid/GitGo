@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">GitGo</string>
+    <string name="login_with_github">Login with GitHub</string>
+    <string name="welcome_to_gitgo">Explore GitHub with GitGo</string>
 </resources>
