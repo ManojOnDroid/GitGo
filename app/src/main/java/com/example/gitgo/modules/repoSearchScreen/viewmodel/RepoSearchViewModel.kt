@@ -17,9 +17,9 @@ class RepoSearchViewModel @Inject constructor(
     private val gitHubSearchRepository: GitHubRepoRepository
 ) : ViewModel() {
      val repos = MutableStateFlow<PagingData<GitHubSearchRepoModel.Item>>(PagingData.empty())
-    fun searchRepositories(query: String) {
+    fun searchRepositories(queryMap: HashMap<String, String>) {
         viewModelScope.launch {
-                gitHubSearchRepository.searchRepositories(query).flow.cachedIn(viewModelScope).collectLatest {
+                gitHubSearchRepository.searchRepositories(queryMap).flow.cachedIn(viewModelScope).collectLatest {
                     repos.value = it
                 }
         }

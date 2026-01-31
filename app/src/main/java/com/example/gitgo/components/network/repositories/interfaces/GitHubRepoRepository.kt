@@ -4,10 +4,11 @@ import androidx.paging.Pager
 import com.example.gitgo.components.network.models.GitHubRepoDetailsModel
 import com.example.gitgo.components.network.models.GitHubRepoIssuesModel
 import com.example.gitgo.components.network.models.GitHubSearchRepoModel
+import com.example.gitgo.components.network.models.UserDetailsResponse
 
 interface GitHubRepoRepository {
     suspend fun searchRepositories(
-        query: String
+        queryMap: HashMap<String, String>
     ) : Pager<Int, GitHubSearchRepoModel.Item>
 
     suspend fun getRepositoryDetails(
@@ -20,5 +21,8 @@ interface GitHubRepoRepository {
         repo: String,
         state: String
     ) : Pager<Int, GitHubRepoIssuesModel.GitHubRepoIssuesModelItem>
+
+    suspend fun getUserDetails() : UserDetailsResponse?
+
 
 }

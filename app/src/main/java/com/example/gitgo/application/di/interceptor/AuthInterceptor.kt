@@ -1,18 +1,26 @@
 package com.example.gitgo.application.di.interceptor
 
-import com.example.gitgo.BuildConfig
+import android.content.Context
+import android.util.Log
 import okhttp3.Interceptor
 import okhttp3.Response
 
-class AuthInterceptor : Interceptor {
+class AuthInterceptor(
+    private val context: Context
+) : Interceptor {
+
     override fun intercept(chain: Interceptor.Chain): Response {
-        val token = BuildConfig.GITHUB_TOKEN
+        val prefs = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+        val token = prefs.getString("access_token", null)
+        Log.e("TAG", "Bearer $token")
+
         val requestBuilder = chain.request().newBuilder()
             .addHeader("User-Agent", "GitGoApp")
-        if (token.isNotBlank()) {
+
+        if (!token.isNullOrBlank()) {
             requestBuilder.addHeader("Authorization", "Bearer $token")
         }
-        val request = requestBuilder.build()
-        return chain.proceed(request)
+
+        return chain.proceed(requestBuilder.build())
     }
 }

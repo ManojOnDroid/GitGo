@@ -7,7 +7,7 @@ import com.example.gitgo.components.network.models.GitHubSearchRepoModel
 
 class GitHubRepoPagingSource(
     private val gitHubApi: GitHubApi,
-    private val query: String
+    private val queryMap: HashMap<String, String>
 ) : PagingSource<Int, GitHubSearchRepoModel.Item>() {
     override fun getRefreshKey(state: PagingState<Int, GitHubSearchRepoModel.Item>): Int? {
         return state.anchorPosition?.let {
@@ -19,7 +19,9 @@ class GitHubRepoPagingSource(
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, GitHubSearchRepoModel.Item> {
         return try {
             val page = params.key ?: 1
-            val response = gitHubApi.searchRepositories(query, page, params.loadSize)
+            queryMap["per_page"] = params.loadSize.toString()
+            queryMap["page"] = page.toString()
+            val response = gitHubApi.searchRepositories(queryMap)
             val repos = response.body()?.items ?: emptyList()
             LoadResult.Page(
                 data = repos.filterNotNull(),

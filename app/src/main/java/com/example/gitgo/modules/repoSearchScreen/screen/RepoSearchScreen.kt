@@ -54,11 +54,14 @@ fun RepoSearchScreen(
                 value = query.value,
                 onValueChange = {
                     query.value = it
+                    val queryMap = HashMap<String, String>()
+                    queryMap["q"] = it
+                    viewModel.searchRepositories(queryMap)
                     searchJob.value?.cancel()
                     searchJob.value = coroutineScope.launch {
                         delay(400)
                         if (query.value.isNotEmpty()) {
-                            viewModel.searchRepositories(query.value)
+                            viewModel.searchRepositories(queryMap)
                         }
                     }
                 },

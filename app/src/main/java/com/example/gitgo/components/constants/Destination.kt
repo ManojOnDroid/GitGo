@@ -6,4 +6,6 @@ object Destination {
     const val REPO_DETAILS_SCREEN = "repoDetails"
     const val REPO_ISSUES_SCREEN = "repoIssues"
     const val SETTINGS_SCREEN = "settings"
+    const val LOGIN_SCREEN = "loginScreen"
+    const val PROFILE_SCREEN = "profileScreen"
 }
