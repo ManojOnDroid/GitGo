@@ -1,5 +1,24 @@
 <resources>
     <string name="app_name">GitGo</string>
     <string name="login_with_github">Login with GitHub</string>
-    <string name="welcome_to_gitgo">Explore GitHub with GitGo</string>
+    <string name="explore_github_repos">Explore GitHub Repositories</string>
+    <string name="welcome_to_gitgo">Welcome to GitGo!</string>
+    <string name="welcome_description">Discover and explore GitHub repositories with ease. Search for projects, view repository details, track issues, and stay connected with the developer community.</string>
+    <string name="start_exploring">Start Exploring Repositories</string>
+    <string name="what_you_can_do">What You Can Do</string>
+    <string name="quick_actions">Quick Actions</string>
+    <string name="trending_repositories">Trending Repositories</string>
+    <string name="loading_trending">Loading trending repositories…</string>
+    <string name="error_trending">Failed to load trending repositories</string>
+    <string name="feature_search_title">Search Repositories</string>
+    <string name="feature_search_desc">Find GitHub repositories by name, description, or programming language</string>
+    <string name="feature_details_title">Repository Details</string>
+    <string name="feature_details_desc">View comprehensive information about repositories including stats and features</string>
+    <string name="feature_issues_title">Track Issues</string>
+    <string name="feature_issues_desc">Browse and filter repository issues to stay updated with project status</string>
+    <string name="action_trending">Trending</string>
+    <string name="action_popular">Popular</string>
+    <string name="action_recent">Recent</string>
+
+    <string name="trending_title">Trending Repositories</string>
 </resources>

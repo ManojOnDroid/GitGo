@@ -7,77 +7,66 @@ import com.example.gitgo.components.network.repositories.interfaces.GitHubRepoRe
 import com.example.gitgo.modules.homeScreen.states.TrendingReposState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import javax.inject.Inject
 
+
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
     private val gitHubSearchRepository: GitHubRepoRepository
 ) : ViewModel() {
-    val repos = MutableStateFlow<TrendingReposState>(TrendingReposState.Loading)
+
+    private val _state = MutableStateFlow<TrendingReposState>(TrendingReposState.Loading)
+    val state: StateFlow<TrendingReposState> = _state.asStateFlow()
+
     init {
         fetchTrending()
     }
-    fun trendingRepositories(queryMap: HashMap<String, String>) {
-        queryMap["sort"] = "stars"
-        queryMap["order"] = "desc"
 
+    fun fetchTrending(
+        periodDays: Int = 7,
+        language: String? = null
+    ) {
         viewModelScope.launch {
+            _state.value = TrendingReposState.Loading
             try {
-                repos.value = TrendingReposState.Loading
+                val query = buildTrendingQuery(periodDays, language)
+
+                val queryMap = hashMapOf(
+                    "q" to query,
+                    "sort" to "stars",
+                    "order" to "desc"
+                )
+
                 val flow = gitHubSearchRepository.searchRepositories(queryMap)
                     .flow
                     .cachedIn(viewModelScope)
 
-                repos.value = TrendingReposState.Success(flow)
+                _state.value = TrendingReposState.Success(flow)
             } catch (e: Exception) {
-                repos.value = TrendingReposState.Error(e.message ?: "Something went wrong")
+                _state.value = TrendingReposState.Error(
+                    e.localizedMessage ?: "Failed to fetch trending repositories"
+                )
             }
         }
-
     }
 
-    fun fetchTrending(
-        periodDays: Int = 1,
-        language: String? = null,
-        useCreated: Boolean = true
-    ) {
-        val queryMap = hashMapOf<String, String>()
+    private fun buildTrendingQuery(periodDays: Int, language: String?): String {
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.DAY_OF_YEAR, -periodDays)
+        val formattedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            .format(calendar.time)
 
-        queryMap["q"] = if (useCreated) {
-            trendingQueryCreated(periodDays, language)
-        } else {
-            trendingQueryPushed(periodDays, language)
+        return buildString {
+            append("created:>$formattedDate")
+            if (!language.isNullOrBlank()) {
+                append(" language:$language")
+            }
         }
-        queryMap["sort"] = "stars"
-        queryMap["order"] = "desc"
-        trendingRepositories(queryMap)
-    }
-
-    fun trendingQueryCreated(
-        periodDays: Int,
-        language: String? = null,
-        extra: String? = null
-    ): String {
-        val calendar = Calendar.getInstance()
-        calendar.add(Calendar.DAY_OF_YEAR, -periodDays)
-        val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
-        val langPart = language?.let { " language:$it" } ?: ""
-        val extraPart = extra?.let { " $it" } ?: ""
-        return "created:>$date$langPart$extraPart"
-    }
-
-    fun trendingQueryPushed(
-        periodDays: Int,
-        language: String? = null
-    ): String {
-        val calendar = Calendar.getInstance()
-        calendar.add(Calendar.DAY_OF_YEAR, -periodDays)
-        val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
-        val langPart = language?.let { " language:$it" } ?: ""
-        return "pushed:>$date$langPart"
     }
 }

@@ -35,72 +35,58 @@ data class GitGoColors(
     val shadow: Color = Color.Unspecified,
     val gradient1: Color = Color.Unspecified,
     val gradient2: Color = Color.Unspecified,
-    // Filter-specific colors
     val filterBackground: Color = Color.Unspecified,
     val dropdownBackground: Color = Color.Unspecified,
     val dropdownSelectedBackground: Color = Color.Unspecified,
     val toolbarBackground: Color = Color.Unspecified,
     val toolbarElevation: Color = Color.Unspecified,
-    val isLight: Boolean = true
+    val isLight: Boolean = true,
+    val gradientStart: Color = Color.Unspecified,
+    val gradientEnd: Color = Color.Unspecified,
+    val whiteText: Color = Color.Unspecified,
 )
 
 val lightGitGoColors = GitGoColors(
-    // Primary Colors
     primary = Color(0xFF2965FF),
     primaryVariant = Color(0xFF1E4FD9),
     secondary = Color(0xFF5C8AFF),
     secondaryVariant = Color(0xFF4A7AE8),
-
-    // Background & Surfaces
     background = Color(0xFFFCFCFC),
     surface = Color(0xFFFFFFFF),
     surfaceVariant = Color(0xFFF5F5F7),
     card = Color(0xFFFFFFFF),
     cardElevated = Color(0xFFFAFAFA),
-
-    // Text Colors
     textColor = Color(0xFF1A1A1A),
     textSecondary = Color(0xFF6B6B6B),
     textTertiary = Color(0xFF9E9E9E),
-
-    // Interactive Elements
     loaderColor = Color(0xFF5C8AFF),
     iconTint = Color(0xFF2C2C2C),
     iconSecondary = Color(0xFF767676),
     floatingColor = Color(0xFF2965FF),
-
-    // Status Colors
     success = Color(0xFF10B981),
     warning = Color(0xFFF59E0B),
     error = Color(0xFFEF4444),
     info = Color(0xFF3B82F6),
-
-    // Borders & Dividers
     outline = Color(0xFFE0E0E0),
     outlineVariant = Color(0xFFF0F0F0),
     divider = Color(0xFFEEEEEE),
-
-    // Special Effects
     shimmer = Color(0xFFF0F0F0),
     chipBackground = Color(0xFFF1F5F9),
     chipSelected = Color(0xFFE0EAFF),
     ripple = Color(0x1A2965FF),
     shadow = Color(0x1A000000),
-
-    // Gradients
     gradient1 = Color(0xFF2965FF),
     gradient2 = Color(0xFF5C8AFF),
-
-    // Filter Colors
     filterBackground = Color(0xFFF8F9FA),
     dropdownBackground = Color(0xFFFFFFFF),
     dropdownSelectedBackground = Color(0xFFE8F0FE),
-
     toolbarBackground = Color(0xFFFFFFFF),
     toolbarElevation = Color(0x0A000000),
-
-    isLight = true
-)
+    isLight = true,
+    gradientStart = Color(0xFFE6F0FF),
+    gradientEnd = Color(0xFFFCFCFC),
+    whiteText = Color(0xFFFFFFFF),
+    )
 
 val darkGitGoColors = GitGoColors(
     // Primary Colors
@@ -157,7 +143,10 @@ val darkGitGoColors = GitGoColors(
     toolbarBackground = Color(0xFF1A1A1A),
     toolbarElevation = Color(0x1A000000),
 
-    isLight = false
+    isLight = false,
+    gradientStart = Color(0xFF141E33),
+    gradientEnd = Color(0xFF0F0F0F),
+    whiteText = Color(0xFFFFFFFF),
 )
 
 val GitGoColors.onPrimary: Color
