@@ -117,7 +117,7 @@ fun RepoSearchScreen(
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = GitGoTheme.colors.surface,
                         unfocusedContainerColor = GitGoTheme.colors.surface,
-                        focusedIndicatorColor = Color.Transparent, // Remove underline
+                        focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                         focusedTextColor = GitGoTheme.colors.textColor,
                         unfocusedTextColor = GitGoTheme.colors.textColor,
@@ -185,7 +185,7 @@ private fun EmptySearchState() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(bottom = 100.dp), // Move visual center up
+            .padding(bottom = 100.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

@@ -36,41 +36,11 @@ import com.example.gitgo.R
 import com.example.gitgo.components.constants.Destination
 import com.example.gitgo.components.network.models.UserDetailsResponse
 import com.example.gitgo.modules.profileScreen.states.UserDetailsResponseState
+import com.example.gitgo.modules.profileScreen.utils.ProfileFormatter
 import com.example.gitgo.modules.profileScreen.viewmodel.ProfileScreenViewModel
 import com.example.gitgo.ui.theme.GitGoTheme
 import java.text.SimpleDateFormat
 import java.util.Locale
-
-// --- Helper for Formatting ---
-private object ProfileFormatter {
-    private val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
-    private val outputFormat = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault())
-
-    fun date(dateString: String): String {
-        return try {
-            val date = inputFormat.parse(dateString)
-            date?.let { outputFormat.format(it) } ?: dateString
-        } catch (e: Exception) { dateString }
-    }
-
-    fun count(count: Int): String {
-        return when {
-            count >= 1_000_000 -> "%.1fM".format(count / 1_000_000.0)
-            count >= 1_000 -> "%.1fK".format(count / 1_000.0)
-            else -> count.toString()
-        }
-    }
-
-    fun bytes(bytes: Int): String {
-        return when {
-            bytes >= 1_073_741_824 -> "%.1f GB".format(bytes / 1_073_741_824.0)
-            bytes >= 1_048_576 -> "%.1f MB".format(bytes / 1_048_576.0)
-            bytes >= 1024 -> "%.1f KB".format(bytes / 1024.0)
-            else -> "$bytes bytes"
-        }
-    }
-}
-
 @Composable
 fun ProfileScreen(
     navController: NavController,
@@ -100,7 +70,6 @@ fun ProfileScreen(
                 ProfileContent(
                     user = state.userDetails,
                     onLogoutClick = {
-                        // Logout Logic
                         val prefs = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE).edit()
                         prefs.remove("access_token")
                         prefs.apply()
@@ -108,7 +77,7 @@ fun ProfileScreen(
                         Toast.makeText(context, "Logged out successfully", Toast.LENGTH_SHORT).show()
 
                         navController.navigate(Destination.LOGIN_SCREEN) {
-                            popUpTo(0) { inclusive = true } // Clear entire backstack
+                            popUpTo(0) { inclusive = true }
                         }
                     }
                 )
@@ -117,7 +86,6 @@ fun ProfileScreen(
     }
 }
 
-// --- MAIN CONTENT ---
 
 @Composable
 private fun ProfileContent(
@@ -143,7 +111,6 @@ private fun ProfileContent(
     }
 }
 
-// --- SUB COMPONENTS ---
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -168,7 +135,6 @@ private fun ProfileHeaderCard(user: UserDetailsResponse) {
                 modifier = Modifier.padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Avatar
                 Surface(
                     modifier = Modifier.size(88.dp),
                     shape = CircleShape,
@@ -239,38 +205,108 @@ private fun ProfileHeaderCard(user: UserDetailsResponse) {
 
 @Composable
 private fun UserInfoCard(user: UserDetailsResponse) {
-    SectionCard(title = stringResource(R.string.profile_info_title), icon = Icons.Default.Info, iconColor = GitGoTheme.colors.info) {
-        if (!user.company.isNullOrBlank()) InfoRow(Icons.Default.Business, "Company", user.company)
-        if (!user.location.isNullOrBlank()) InfoRow(Icons.Default.LocationOn, "Location", user.location)
-        if (!user.email.isNullOrBlank()) InfoRow(Icons.Default.Email, "Email", user.email)
-        if (!user.blog.isNullOrBlank()) InfoRow(Icons.Default.Link, "Website", user.blog, isLink = true)
-        if (!user.twitterUsername.isNullOrBlank()) InfoRow(Icons.Default.Tag, "Twitter", "@${user.twitterUsername}")
-        user.createdAt?.let { InfoRow(Icons.Default.CalendarMonth, "Joined", ProfileFormatter.date(it)) }
-        InfoRow(Icons.Default.AccountCircle, "Type", user.type ?: "User")
+    SectionCard(
+        title = stringResource(R.string.profile_info_title),
+        icon = Icons.Default.Info,
+        iconColor = GitGoTheme.colors.info
+    ) {
+        if (!user.company.isNullOrBlank()) {
+            InfoRow(Icons.Default.Business, stringResource(R.string.profile_label_company), user.company)
+        }
+        if (!user.location.isNullOrBlank()) {
+            InfoRow(Icons.Default.LocationOn, stringResource(R.string.profile_label_location), user.location)
+        }
+        if (!user.email.isNullOrBlank()) {
+            InfoRow(Icons.Default.Email, stringResource(R.string.profile_label_email), user.email)
+        }
+        if (!user.blog.isNullOrBlank()) {
+            InfoRow(Icons.Default.Link, stringResource(R.string.profile_label_website), user.blog, isLink = true)
+        }
+        if (!user.twitterUsername.isNullOrBlank()) {
+            InfoRow(Icons.Default.Tag, stringResource(R.string.profile_label_twitter), "@${user.twitterUsername}")
+        }
+
+        user.createdAt?.let {
+            InfoRow(Icons.Default.CalendarMonth, stringResource(R.string.profile_label_joined), ProfileFormatter.date(it))
+        }
+
+        InfoRow(
+            Icons.Default.AccountCircle,
+            stringResource(R.string.profile_label_type),
+            user.type ?: stringResource(R.string.profile_default_type)
+        )
     }
 }
 
 @Composable
 private fun RepoStatsCard(user: UserDetailsResponse) {
-    SectionCard(title = stringResource(R.string.profile_repo_stats_title), icon = Icons.Default.Folder, iconColor = GitGoTheme.colors.success) {
+    SectionCard(
+        title = stringResource(R.string.profile_repo_stats_title),
+        icon = Icons.Default.Folder,
+        iconColor = GitGoTheme.colors.success
+    ) {
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            RepoStatItem(user.publicRepos ?: 0, "Public Repos", Icons.Default.Public, GitGoTheme.colors.success, Modifier.weight(1f))
-            RepoStatItem(user.ownedPrivateRepos ?: 0, "Private Repos", Icons.Default.Lock, GitGoTheme.colors.warning, Modifier.weight(1f))
+            RepoStatItem(
+                user.publicRepos ?: 0,
+                stringResource(R.string.profile_stat_public_repos),
+                Icons.Default.Public,
+                GitGoTheme.colors.success,
+                Modifier.weight(1f)
+            )
+            RepoStatItem(
+                user.ownedPrivateRepos ?: 0,
+                stringResource(R.string.profile_stat_private_repos),
+                Icons.Default.Lock,
+                GitGoTheme.colors.warning,
+                Modifier.weight(1f)
+            )
         }
         Spacer(modifier = Modifier.height(12.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            RepoStatItem(user.publicGists ?: 0, "Public Gists", Icons.Default.Code, GitGoTheme.colors.info, Modifier.weight(1f))
-            RepoStatItem(user.privateGists ?: 0, "Private Gists", Icons.Default.VisibilityOff, GitGoTheme.colors.textSecondary, Modifier.weight(1f))
+            RepoStatItem(
+                user.publicGists ?: 0,
+                stringResource(R.string.profile_stat_public_gists),
+                Icons.Default.Code,
+                GitGoTheme.colors.info,
+                Modifier.weight(1f)
+            )
+            RepoStatItem(
+                user.privateGists ?: 0,
+                stringResource(R.string.profile_stat_private_gists),
+                Icons.Default.VisibilityOff,
+                GitGoTheme.colors.textSecondary,
+                Modifier.weight(1f)
+            )
         }
     }
 }
 
 @Composable
 private fun PlanInfoCard(plan: UserDetailsResponse.Plan, diskUsage: Int?) {
-    SectionCard(title = stringResource(R.string.profile_plan_title), icon = Icons.Default.Star, iconColor = GitGoTheme.colors.warning) {
-        InfoRow(Icons.Default.CardMembership, "Plan", plan.name ?: "Free")
-        InfoRow(Icons.Default.Storage, "Space", ProfileFormatter.bytes(plan.space ?: 0))
-        diskUsage?.let { InfoRow(Icons.Default.SdCard, "Disk Usage", ProfileFormatter.bytes(it)) }
+    SectionCard(
+        title = stringResource(R.string.profile_plan_title),
+        icon = Icons.Default.Star,
+        iconColor = GitGoTheme.colors.warning
+    ) {
+        InfoRow(
+            Icons.Default.CardMembership,
+            stringResource(R.string.profile_label_plan),
+            plan.name ?: stringResource(R.string.profile_plan_free)
+        )
+
+        InfoRow(
+            Icons.Default.Storage,
+            stringResource(R.string.profile_label_space),
+            ProfileFormatter.bytes(plan.space ?: 0)
+        )
+
+        diskUsage?.let {
+            InfoRow(
+                Icons.Default.SdCard,
+                stringResource(R.string.profile_label_disk_usage),
+                ProfileFormatter.bytes(it)
+            )
+        }
     }
 }
 
@@ -300,7 +336,6 @@ private fun LogoutCard(onClick: () -> Unit) {
     }
 }
 
-// --- PRIMITIVES ---
 
 @Composable
 private fun SectionCard(

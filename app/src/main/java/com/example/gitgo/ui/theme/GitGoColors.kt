@@ -89,53 +89,44 @@ val lightGitGoColors = GitGoColors(
     )
 
 val darkGitGoColors = GitGoColors(
-    // Primary Colors
     primary = Color(0xFF4A80FF),
     primaryVariant = Color(0xFF366EE0),
     secondary = Color(0xFF6B93FF),
     secondaryVariant = Color(0xFF5A82E8),
 
-    // Background & Surfaces
     background = Color(0xFF0F0F0F),
     surface = Color(0xFF1A1A1A),
     surfaceVariant = Color(0xFF242424),
     card = Color(0xFF1E1E1E),
     cardElevated = Color(0xFF252525),
 
-    // Text Colors
     textColor = Color(0xFFFFFFFF),
     textSecondary = Color(0xFFB3B3B3),
     textTertiary = Color(0xFF737373),
 
-    // Interactive Elements
     loaderColor = Color(0xFF4A80FF),
     iconTint = Color(0xFFE5E5E5),
     iconSecondary = Color(0xFFA0A0A0),
     floatingColor = Color(0xFF4A80FF),
 
-    // Status Colors
     success = Color(0xFF22C55E),
     warning = Color(0xFFFBBF24),
     error = Color(0xFFF87171),
     info = Color(0xFF60A5FA),
 
-    // Borders & Dividers
     outline = Color(0xFF333333),
     outlineVariant = Color(0xFF2A2A2A),
     divider = Color(0xFF2C2C2C),
 
-    // Special Effects
     shimmer = Color(0xFF2A2A2A),
     chipBackground = Color(0xFF262626),
     chipSelected = Color(0xFF1A2A4A),
     ripple = Color(0x1A4A80FF),
     shadow = Color(0x33000000),
 
-    // Gradients
     gradient1 = Color(0xFF4A80FF),
     gradient2 = Color(0xFF6B93FF),
 
-    // Filter Colors
     filterBackground = Color(0xFF262626),
     dropdownBackground = Color(0xFF2A2A2A),
     dropdownSelectedBackground = Color(0xFF1A2D4A),
@@ -158,7 +149,6 @@ val GitGoColors.onSurface: Color
 val GitGoColors.onCard: Color
     get() = textColor
 
-// Semantic color shortcuts
 val GitGoColors.successBackground: Color
     get() = success.copy(alpha = 0.1f)
 

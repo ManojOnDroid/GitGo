@@ -33,7 +33,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -48,6 +47,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -58,7 +58,7 @@ import com.example.gitgo.modules.homeScreen.components.FeaturesSection
 import com.example.gitgo.modules.homeScreen.components.HomeBackgroundDecor
 import com.example.gitgo.modules.homeScreen.components.QuickActionsSection
 import com.example.gitgo.modules.homeScreen.components.SearchButton
-import com.example.gitgo.modules.homeScreen.components.TrendingHeader
+import com.example.gitgo.modules.homeScreen.components.SectionHeader
 import com.example.gitgo.modules.homeScreen.components.WelcomeCard
 import com.example.gitgo.modules.homeScreen.states.TrendingReposState
 import com.example.gitgo.modules.homeScreen.viewmodel.HomeScreenViewModel
@@ -74,7 +74,8 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeScreenViewModel = hiltViewModel()
 ) {
-    val trendingState by viewModel.state.collectAsState()
+    val trendingState by viewModel.state.collectAsStateWithLifecycle()
+    val currentAction by viewModel.currentAction.collectAsStateWithLifecycle()
     val scrollState = rememberLazyListState()
     val collapseRange = 200.dp
     val collapseRangePx = with(LocalDensity.current) { collapseRange.toPx() }
@@ -125,11 +126,14 @@ fun HomeScreen(
                 FeaturesSection()
             }
             item {
-                QuickActionsSection()
+                QuickActionsSection(
+                    selectedAction = currentAction,
+                    onActionClick = { action -> viewModel.onQuickActionSelected(action) }
+                )
             }
 
             item {
-                TrendingHeader()
+                SectionHeader(currentAction)
             }
 
             item {
@@ -228,7 +232,6 @@ fun HomeScreen(
                                                         .fillMaxSize()
                                                         .padding(16.dp)
                                                 ) {
-                                                    // Owner avatar and name
                                                     Row(
                                                         verticalAlignment = Alignment.CenterVertically,
                                                         modifier = Modifier.fillMaxWidth()
@@ -260,7 +263,6 @@ fun HomeScreen(
 
                                                     Spacer(modifier = Modifier.height(8.dp))
 
-                                                    // Repository name
                                                     Text(
                                                         text = it.name ?: "Unknown Repo",
                                                         style = MaterialTheme.typography.titleSmall,
@@ -272,7 +274,6 @@ fun HomeScreen(
 
                                                     Spacer(modifier = Modifier.height(6.dp))
 
-                                                    // Description
                                                     Text(
                                                         text = it.description?.take(80)
                                                             ?: "No description available",
@@ -286,7 +287,6 @@ fun HomeScreen(
 
                                                     Spacer(modifier = Modifier.height(8.dp))
 
-                                                    // Language and stats
                                                     Column {
                                                         if (it.language != null) {
                                                             Surface(

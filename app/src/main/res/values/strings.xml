@@ -37,6 +37,24 @@
     <string name="issue_retry">Retry</string>
     <string name="issue_empty">No issues found</string>
     <string name="issue_empty_desc">This repository doesn\'t have any issues with the current filter.</string>
-
+    <string name="header_trending">Trending Repositories</string>
+    <string name="header_popular">Most Popular</string>
+    <string name="header_recent">Recently Updated</string>
     <string name="trending_title">Trending Repositories</string>
+    <string name="profile_label_company">Company</string>
+    <string name="profile_label_location">Location</string>
+    <string name="profile_label_email">Email</string>
+    <string name="profile_label_website">Website</string>
+    <string name="profile_label_twitter">Twitter</string>
+    <string name="profile_label_joined">Joined</string>
+    <string name="profile_label_type">Type</string>
+    <string name="profile_default_type">User</string>
+    <string name="profile_stat_public_repos">Public Repos</string>
+    <string name="profile_stat_private_repos">Private Repos</string>
+    <string name="profile_stat_public_gists">Public Gists</string>
+    <string name="profile_stat_private_gists">Private Gists</string>
+    <string name="profile_label_plan">Plan</string>
+    <string name="profile_plan_free">Free</string>
+    <string name="profile_label_space">Space</string>
+    <string name="profile_label_disk_usage">Disk Usage</string>
 </resources>

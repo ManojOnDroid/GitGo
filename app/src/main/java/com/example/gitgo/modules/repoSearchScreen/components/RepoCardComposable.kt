@@ -31,13 +31,12 @@ fun RepoCardComposable(repo: GitHubSearchRepoModel.Item, navController: NavContr
                 navController.navigate("repoDetails/${repo.owner?.login}/${repo.name}")
             },
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(2.dp), // Subtle elevation
+        elevation = CardDefaults.cardElevation(2.dp),
         colors = CardDefaults.cardColors(
             containerColor = GitGoTheme.colors.surface
         )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            // Header: Avatar + Name
             Row(verticalAlignment = Alignment.CenterVertically) {
                 GlideImage(
                     model = repo.owner?.avatarUrl,
@@ -68,7 +67,6 @@ fun RepoCardComposable(repo: GitHubSearchRepoModel.Item, navController: NavContr
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Description
             if (!repo.description.isNullOrBlank()) {
                 Text(
                     text = repo.description,
@@ -81,12 +79,10 @@ fun RepoCardComposable(repo: GitHubSearchRepoModel.Item, navController: NavContr
                 Spacer(modifier = Modifier.height(12.dp))
             }
 
-            // Stats Footer
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Language Badge
                 if (!repo.language.isNullOrEmpty()) {
                     Surface(
                         color = GitGoTheme.colors.primary.copy(alpha = 0.1f),
@@ -101,7 +97,6 @@ fun RepoCardComposable(repo: GitHubSearchRepoModel.Item, navController: NavContr
                     }
                 }
 
-                // Stars
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         Icons.Default.Star,
@@ -117,7 +112,6 @@ fun RepoCardComposable(repo: GitHubSearchRepoModel.Item, navController: NavContr
                     )
                 }
 
-                // Forks
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         Icons.Default.CallSplit,
@@ -137,7 +131,6 @@ fun RepoCardComposable(repo: GitHubSearchRepoModel.Item, navController: NavContr
     }
 }
 
-// Simple helper to make numbers look nice (1200 -> 1.2k)
 private fun formatCount(count: Int): String {
     return when {
         count >= 1_000_000 -> "%.1fM".format(count / 1_000_000.0)

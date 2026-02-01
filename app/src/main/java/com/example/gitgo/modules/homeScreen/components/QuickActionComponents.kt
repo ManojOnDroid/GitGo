@@ -1,6 +1,5 @@
 package com.example.gitgo.modules.homeScreen.components
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,10 +25,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.gitgo.R
+import com.example.gitgo.modules.homeScreen.models.QuickAction
 import com.example.gitgo.ui.theme.GitGoTheme
 
 @Composable
-fun QuickActionsSection() {
+fun QuickActionsSection(
+    selectedAction: QuickAction,
+    onActionClick: (QuickAction) -> Unit
+) {
     Column {
         Text(
             text = stringResource(R.string.quick_actions),
@@ -47,20 +50,23 @@ fun QuickActionsSection() {
         ) {
             QuickActionCard(
                 icon = Icons.Default.TrendingUp,
-                labelRes = R.string.action_trending,
-                onClick = { /* Handle Trending Click */ },
+                label = stringResource(R.string.action_trending),
+                isSelected = selectedAction == QuickAction.TRENDING,
+                onClick = { onActionClick(QuickAction.TRENDING) },
                 modifier = Modifier.weight(1f)
             )
             QuickActionCard(
                 icon = Icons.Default.Star,
-                labelRes = R.string.action_popular,
-                onClick = { /* Handle Popular Click */ },
+                label = stringResource(R.string.action_popular),
+                isSelected = selectedAction == QuickAction.POPULAR,
+                onClick = { onActionClick(QuickAction.POPULAR) },
                 modifier = Modifier.weight(1f)
             )
             QuickActionCard(
                 icon = Icons.Default.History,
-                labelRes = R.string.action_recent,
-                onClick = { /* Handle Recent Click */ },
+                label = stringResource(R.string.action_recent),
+                isSelected = selectedAction == QuickAction.RECENT,
+                onClick = { onActionClick(QuickAction.RECENT) },
                 modifier = Modifier.weight(1f)
             )
         }
@@ -70,18 +76,21 @@ fun QuickActionsSection() {
 @Composable
 private fun QuickActionCard(
     icon: ImageVector,
-    @StringRes labelRes: Int,
+    label: String,
+    isSelected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val containerColor = if (isSelected) GitGoTheme.colors.primary else GitGoTheme.colors.surface
+    val contentColor = if (isSelected) androidx.compose.ui.graphics.Color.White else GitGoTheme.colors.textColor
+    val iconColor = if (isSelected) androidx.compose.ui.graphics.Color.White else GitGoTheme.colors.primary
+
     Card(
         onClick = onClick,
         modifier = modifier,
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = GitGoTheme.colors.surface
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        colors = CardDefaults.cardColors(containerColor = containerColor),
+        elevation = CardDefaults.cardElevation(defaultElevation = if (isSelected) 8.dp else 2.dp)
     ) {
         Column(
             modifier = Modifier
@@ -92,16 +101,16 @@ private fun QuickActionCard(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = GitGoTheme.colors.primary,
+                tint = iconColor,
                 modifier = Modifier.size(24.dp)
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = stringResource(labelRes),
+                text = label,
                 style = GitGoTheme.typography.bodyMedium,
-                color = GitGoTheme.colors.textColor,
+                color = contentColor,
                 textAlign = TextAlign.Center
             )
         }
