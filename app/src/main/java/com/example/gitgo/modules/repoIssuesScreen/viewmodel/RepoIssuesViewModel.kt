@@ -8,41 +8,30 @@ import androidx.paging.cachedIn
 import com.example.gitgo.components.network.models.GitHubRepoIssuesModel
 import com.example.gitgo.components.network.repositories.interfaces.GitHubRepoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.flatMapLatest
 import javax.inject.Inject
 
 @HiltViewModel
 class RepoIssuesViewModel @Inject constructor(
-    private val gitHubRepoRepository: GitHubRepoRepository,
+    private val repository: GitHubRepoRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _issues = MutableStateFlow<PagingData<GitHubRepoIssuesModel.GitHubRepoIssuesModelItem>>(
-        PagingData.empty()
-    )
-    val issues: StateFlow<PagingData<GitHubRepoIssuesModel.GitHubRepoIssuesModelItem>> =
-        _issues.asStateFlow()
-
+    private val _currentFilter = MutableStateFlow("all")
+    val currentFilter = _currentFilter.asStateFlow()
 
     val owner: String = checkNotNull(savedStateHandle["owner"])
     val repo: String = checkNotNull(savedStateHandle["repo"])
 
-    init {
-        fetchIssuesWithState(owner, repo, "all")
-    }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val issues = _currentFilter.flatMapLatest { state ->
+        repository.getRepositoryIssues(owner, repo, state).flow
+    }.cachedIn(viewModelScope)
 
-    fun fetchIssuesWithState(owner: String, repo: String, state: String) {
-        viewModelScope.launch {
-            gitHubRepoRepository.getRepositoryIssues(owner, repo, state).flow
-                .cachedIn(viewModelScope)
-                .collectLatest { pagingData ->
-                    _issues.value = pagingData
-                }
-        }
+    fun updateFilter(filter: String) {
+        _currentFilter.value = filter
     }
-
 }

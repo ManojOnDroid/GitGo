@@ -24,7 +24,7 @@ fun GitHubExplorerApp() {
     val currentRoute = navBackStackEntry?.destination?.route ?: Destination.LOGIN_SCREEN
     val showBottomBar = currentRoute in bottomNavItems.map { it.route }
     val showBackButton = when (currentRoute) {
-        Destination.HOME_SCREEN, Destination.LOGIN_SCREEN, Destination.SETTINGS_SCREEN -> false
+        Destination.HOME_SCREEN, Destination.LOGIN_SCREEN, Destination.PROFILE_SCREEN, Destination.REPO_SEARCH_SCREEN -> false
         else -> true
     }
     val toolbarTitle = when {
@@ -48,13 +48,6 @@ fun GitHubExplorerApp() {
                 title = toolbarTitle,
                 showBackButton = showBackButton,
                 onBackClick = { navController.navigateUp() },
-                actions = {
-                    if (currentRoute == Destination.HOME_SCREEN) {
-                        IconButton(onClick = { navController.navigate(Destination.REPO_SEARCH_SCREEN) }) {
-                            Icon(Icons.Default.Search, contentDescription = null)
-                        }
-                    }
-                }
             )
         },
         bottomBar = {

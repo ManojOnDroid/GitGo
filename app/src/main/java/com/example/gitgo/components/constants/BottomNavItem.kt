@@ -2,6 +2,7 @@ package com.example.gitgo.components.constants
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -23,9 +24,9 @@ val bottomNavItems = listOf(
         icon = Icons.Default.Search
     ),
     BottomNavItem(
-        route = Destination.SETTINGS_SCREEN,
-        label = "Settings",
-        icon = Icons.Default.Settings
+        route = Destination.PROFILE_SCREEN,
+        label = "Profile",
+        icon = Icons.Default.Person
     )
 )
 

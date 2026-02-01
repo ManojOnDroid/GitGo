@@ -4,9 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.example.gitgo.components.network.repositories.interfaces.GitHubRepoRepository
+import com.example.gitgo.modules.homeScreen.models.QuickAction
 import com.example.gitgo.modules.homeScreen.states.TrendingReposState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -17,67 +20,68 @@ import javax.inject.Inject
 class HomeScreenViewModel @Inject constructor(
     private val gitHubSearchRepository: GitHubRepoRepository
 ) : ViewModel() {
-    val repos = MutableStateFlow<TrendingReposState>(TrendingReposState.Loading)
-    init {
-        fetchTrending()
-    }
-    fun trendingRepositories(queryMap: HashMap<String, String>) {
-        queryMap["sort"] = "stars"
-        queryMap["order"] = "desc"
 
+    private val _state = MutableStateFlow<TrendingReposState>(TrendingReposState.Loading)
+    val state: StateFlow<TrendingReposState> = _state.asStateFlow()
+
+    private val _currentAction = MutableStateFlow(QuickAction.TRENDING)
+    val currentAction: StateFlow<QuickAction> = _currentAction.asStateFlow()
+
+    init {
+        fetchRepositories(QuickAction.TRENDING)
+    }
+
+    fun onQuickActionSelected(action: QuickAction) {
+        if (_currentAction.value != action) {
+            _currentAction.value = action
+            fetchRepositories(action)
+        }
+    }
+
+    private fun fetchRepositories(action: QuickAction) {
         viewModelScope.launch {
+            _state.value = TrendingReposState.Loading
             try {
-                repos.value = TrendingReposState.Loading
+                val (query, sort) = buildQueryAndSort(action)
+
+                val queryMap = hashMapOf(
+                    "q" to query,
+                    "sort" to sort,
+                    "order" to "desc"
+                )
+
                 val flow = gitHubSearchRepository.searchRepositories(queryMap)
                     .flow
                     .cachedIn(viewModelScope)
 
-                repos.value = TrendingReposState.Success(flow)
+                _state.value = TrendingReposState.Success(flow)
             } catch (e: Exception) {
-                repos.value = TrendingReposState.Error(e.message ?: "Something went wrong")
+                _state.value = TrendingReposState.Error(
+                    e.localizedMessage ?: "Failed to fetch repositories"
+                )
             }
         }
-
     }
 
-    fun fetchTrending(
-        periodDays: Int = 1,
-        language: String? = null,
-        useCreated: Boolean = true
-    ) {
-        val queryMap = hashMapOf<String, String>()
+    private fun buildQueryAndSort(action: QuickAction): Pair<String, String> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val calendar = Calendar.getInstance()
 
-        queryMap["q"] = if (useCreated) {
-            trendingQueryCreated(periodDays, language)
-        } else {
-            trendingQueryPushed(periodDays, language)
+        return when (action) {
+            QuickAction.TRENDING -> {
+                calendar.add(Calendar.DAY_OF_YEAR, -7)
+                val date = dateFormat.format(calendar.time)
+                "created:>$date" to "stars"
+            }
+            QuickAction.POPULAR -> {
+                "stars:>10000" to "stars"
+            }
+            QuickAction.RECENT -> {
+                // Recently pushed (last 30 days), Sort by Updated
+                calendar.add(Calendar.DAY_OF_YEAR, -30)
+                val date = dateFormat.format(calendar.time)
+                "pushed:>$date" to "updated"
+            }
         }
-        queryMap["sort"] = "stars"
-        queryMap["order"] = "desc"
-        trendingRepositories(queryMap)
-    }
-
-    fun trendingQueryCreated(
-        periodDays: Int,
-        language: String? = null,
-        extra: String? = null
-    ): String {
-        val calendar = Calendar.getInstance()
-        calendar.add(Calendar.DAY_OF_YEAR, -periodDays)
-        val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
-        val langPart = language?.let { " language:$it" } ?: ""
-        val extraPart = extra?.let { " $it" } ?: ""
-        return "created:>$date$langPart$extraPart"
-    }
-
-    fun trendingQueryPushed(
-        periodDays: Int,
-        language: String? = null
-    ): String {
-        val calendar = Calendar.getInstance()
-        calendar.add(Calendar.DAY_OF_YEAR, -periodDays)
-        val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
-        val langPart = language?.let { " language:$it" } ?: ""
-        return "pushed:>$date$langPart"
     }
 }

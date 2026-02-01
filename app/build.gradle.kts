@@ -10,7 +10,11 @@ plugins {
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.hilt.gradle.plugin)
 }
-
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(FileInputStream(localPropertiesFile))
+}
 android {
     namespace = "com.example.gitgo"
     compileSdk = 36
@@ -46,6 +50,10 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+    defaultConfig {
+        buildConfigField("String", "GITHUB_CLIENT_ID", localProperties.getProperty("GITHUB_CLIENT_ID"))
+        buildConfigField("String", "GITHUB_CLIENT_SECRET", localProperties.getProperty("GITHUB_CLIENT_SECRET"))
     }
 }
 
