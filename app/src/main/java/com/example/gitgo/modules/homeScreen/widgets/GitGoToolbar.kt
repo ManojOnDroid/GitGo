@@ -18,7 +18,6 @@ fun GitGoToolbar(
     title: String,
     showBackButton: Boolean,
     onBackClick: (() -> Unit)?,
-    actions: @Composable RowScope.() -> Unit = {},
 ) {
     CenterAlignedTopAppBar(
         title = {
@@ -43,7 +42,6 @@ fun GitGoToolbar(
                 }
             }
         },
-        actions = actions
     )
 }
 

@@ -19,6 +19,24 @@
     <string name="action_trending">Trending</string>
     <string name="action_popular">Popular</string>
     <string name="action_recent">Recent</string>
+    <string name="profile_loading">Loading profile...</string>
+    <string name="profile_error_title">Failed to load profile</string>
+    <string name="profile_repos">Repositories</string>
+    <string name="profile_followers">Followers</string>
+    <string name="profile_following">Following</string>
+    <string name="profile_info_title">Information</string>
+    <string name="profile_repo_stats_title">Repository Stats</string>
+    <string name="profile_plan_title">Plan Information</string>
+    <string name="btn_logout">Logout</string>
+    <string name="issues_title">Repository Issues</string>
+    <string name="filter_all">All Issues</string>
+    <string name="filter_open">Open</string>
+    <string name="filter_closed">Closed</string>
+    <string name="issue_loading">Loading issues...</string>
+    <string name="issue_error_title">Failed to load issues</string>
+    <string name="issue_retry">Retry</string>
+    <string name="issue_empty">No issues found</string>
+    <string name="issue_empty_desc">This repository doesn\'t have any issues with the current filter.</string>
 
     <string name="trending_title">Trending Repositories</string>
 </resources>

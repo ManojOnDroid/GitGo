@@ -51,6 +51,12 @@ data class GitGoTypography(
         fontSize = 14.sp,
         lineHeight = 20.sp
     ),
+    val bodySmall: TextStyle = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp,
+        lineHeight = 18.sp
+    ),
     val labelSmall: TextStyle = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Medium,
@@ -69,6 +75,7 @@ fun getGitGoTypography(textColor: Color): GitGoTypography {
         titleMedium = GitGoTypography().titleMedium.copy(color = textColor),
         bodyLarge = GitGoTypography().bodyLarge.copy(color = textColor),
         bodyMedium = GitGoTypography().bodyMedium.copy(color = textColor),
+        bodySmall = GitGoTypography().bodySmall.copy(color = textColor),
         labelSmall = GitGoTypography().labelSmall.copy(color = textColor)
     )
 }
