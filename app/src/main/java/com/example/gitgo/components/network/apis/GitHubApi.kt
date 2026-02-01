@@ -27,7 +27,7 @@ interface GitHubApi {
     suspend fun getRepositoryIssues(
         @Path("owner") owner: String,
         @Path("repo") repo: String,
-        @Query("state") state: String = "all", // open, closed, or all
+        @Query("state") state: String = "all",
         @Query("per_page") perPage: Int,
         @Query("page") page: Int
     ) : Response<GitHubRepoIssuesModel>

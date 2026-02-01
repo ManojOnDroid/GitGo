@@ -3,6 +3,8 @@ package com.example.gitgo.components.network.repositories.implementation
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import com.example.gitgo.components.network.apis.GitHubApi
+import com.example.gitgo.components.network.base.BaseDataSource
+import com.example.gitgo.components.network.base.NetworkResult
 import com.example.gitgo.components.network.models.GitHubRepoDetailsModel
 import com.example.gitgo.components.network.models.GitHubRepoIssuesModel
 import com.example.gitgo.components.network.models.GitHubSearchRepoModel
@@ -12,7 +14,7 @@ import com.example.gitgo.components.network.paging.GitHubRepoPagingSource
 import com.example.gitgo.components.network.repositories.interfaces.GitHubRepoRepository
 import javax.inject.Inject
 
-class GitHubRepoRepositoryImpl @Inject constructor(private val gitHubApi: GitHubApi) :
+class GitHubRepoRepositoryImpl @Inject constructor(private val gitHubApi: GitHubApi) : BaseDataSource(),
     GitHubRepoRepository {
 
     override suspend fun searchRepositories(queryMap: HashMap<String, String>): Pager<Int, GitHubSearchRepoModel.Item> {
@@ -26,18 +28,6 @@ class GitHubRepoRepositoryImpl @Inject constructor(private val gitHubApi: GitHub
                 GitHubRepoPagingSource(gitHubApi, queryMap)
             }
         )
-    }
-
-    override suspend fun getRepositoryDetails(
-        owner: String,
-        repo: String
-    ): GitHubRepoDetailsModel? {
-        val response = gitHubApi.getRepositoryDetails(owner, repo)
-        if (response.isSuccessful) {
-            return response.body()
-        } else {
-            throw Exception("Error: ${response.code()} ${response.message()}")
-        }
     }
 
     override suspend fun getRepositoryIssues(
@@ -56,13 +46,15 @@ class GitHubRepoRepositoryImpl @Inject constructor(private val gitHubApi: GitHub
             }
         )
     }
+    override suspend fun getRepositoryDetails(owner: String, repo: String): NetworkResult<GitHubRepoDetailsModel> {
+        return safeApiCall {
+            gitHubApi.getRepositoryDetails(owner, repo)
+        }
+    }
 
-    override suspend fun getUserDetails(): UserDetailsResponse? {
-        val response = gitHubApi.getUserDetails()
-        if (response.isSuccessful) {
-            return response.body()
-        } else {
-            throw Exception("Error: ${response.code()} ${response.message()}")
+    override suspend fun getUserDetails(): NetworkResult<UserDetailsResponse> {
+        return safeApiCall {
+            gitHubApi.getUserDetails()
         }
     }
 

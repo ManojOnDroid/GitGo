@@ -1,58 +1,27 @@
 package com.example.gitgo.modules.profileScreen.screen
 
 import android.content.Context
+import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Business
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.CardMembership
-import androidx.compose.material.icons.filled.Code
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Error
-import androidx.compose.material.icons.filled.Folder
-import androidx.compose.material.icons.filled.Logout
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Link
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Public
-import androidx.compose.material.icons.filled.SdCard
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.Storage
-import androidx.compose.material.icons.filled.Tag
-import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -63,26 +32,23 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.example.gitgo.R
 import com.example.gitgo.components.constants.Destination
+import com.example.gitgo.components.network.models.UserDetailsResponse
 import com.example.gitgo.modules.profileScreen.states.UserDetailsResponseState
+import com.example.gitgo.modules.profileScreen.utils.ProfileFormatter
 import com.example.gitgo.modules.profileScreen.viewmodel.ProfileScreenViewModel
 import com.example.gitgo.ui.theme.GitGoTheme
-import com.example.gitgo.ui.theme.errorBackground
-import com.example.gitgo.ui.theme.infoBackground
-import com.example.gitgo.ui.theme.primaryBackground
-import com.example.gitgo.ui.theme.successBackground
-import com.example.gitgo.ui.theme.warningBackground
 import java.text.SimpleDateFormat
 import java.util.Locale
-
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ProfileScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
     viewModel: ProfileScreenViewModel = hiltViewModel()
 ) {
-    val userDetailsState = viewModel.userDetails.collectAsStateWithLifecycle().value
+    val userDetailsState by viewModel.userDetails.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     Box(
         modifier = modifier
@@ -90,640 +56,376 @@ fun ProfileScreen(
             .background(
                 Brush.verticalGradient(
                     colors = listOf(
-                        GitGoTheme.colors.gradient1.copy(alpha = 0.3f),
-                        GitGoTheme.colors.background,
-                        GitGoTheme.colors.surfaceVariant
+                        GitGoTheme.colors.gradientStart,
+                        GitGoTheme.colors.gradientEnd,
+                        GitGoTheme.colors.background
                     )
                 )
             )
     ) {
         when (val state = userDetailsState) {
-            is UserDetailsResponseState.Loading -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Surface(
-                        shape = CircleShape,
-                        color = GitGoTheme.colors.primaryBackground,
-                        modifier = Modifier.size(80.dp)
-                    ) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            CircularProgressIndicator(
-                                color = GitGoTheme.colors.loaderColor,
-                                strokeWidth = 4.dp,
-                                modifier = Modifier.size(40.dp)
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Text(
-                        text = "Loading profile...",
-                        color = GitGoTheme.colors.textSecondary,
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-            }
-
-            is UserDetailsResponseState.Error -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Surface(
-                        shape = CircleShape,
-                        color = GitGoTheme.colors.errorBackground,
-                        modifier = Modifier.size(80.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Error,
-                            contentDescription = "Error",
-                            tint = GitGoTheme.colors.error,
-                            modifier = Modifier
-                                .size(40.dp)
-                                .padding(20.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Text(
-                        text = "Failed to load profile",
-                        color = GitGoTheme.colors.textColor,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = state.message,
-                        color = GitGoTheme.colors.textSecondary,
-                        style = MaterialTheme.typography.bodyMedium,
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
-
+            is UserDetailsResponseState.Loading -> LoadingView()
+            is UserDetailsResponseState.Error -> ErrorView(state.message)
             is UserDetailsResponseState.Success -> {
-                val user = state.userDetails
+                ProfileContent(
+                    user = state.userDetails,
+                    onLogoutClick = {
+                        val prefs = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE).edit()
+                        prefs.remove("access_token")
+                        prefs.apply()
 
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    // Header with Avatar and Basic Info
-                    item {
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(20.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = GitGoTheme.colors.card
-                            ),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(
-                                        Brush.verticalGradient(
-                                            colors = listOf(
-                                                GitGoTheme.colors.primary.copy(alpha = 0.1f),
-                                                GitGoTheme.colors.card
-                                            )
-                                        )
-                                    )
-                            ) {
-                                Column(
-                                    modifier = Modifier.padding(24.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    // Avatar
-                                    Surface(
-                                        modifier = Modifier.size(80.dp),
-                                        shape = CircleShape,
-                                        color = GitGoTheme.colors.outline,
-                                        shadowElevation = 8.dp
-                                    ) {
-                                        GlideImage(
-                                            model = user.avatarUrl,
-                                            contentDescription = "Profile Picture",
-                                            modifier = Modifier
-                                                .fillMaxSize()
-                                                .clip(CircleShape)
-                                                .border(4.dp, GitGoTheme.colors.surface, CircleShape)
-                                        )
-                                    }
+                        Toast.makeText(context, "Logged out successfully", Toast.LENGTH_SHORT).show()
 
-                                    Spacer(modifier = Modifier.height(16.dp))
-
-                                    // Name
-                                    Text(
-                                        text = user.name ?: "Unknown User",
-                                        style = MaterialTheme.typography.headlineMedium,
-                                        fontWeight = FontWeight.Bold,
-                                        color = GitGoTheme.colors.textColor,
-                                        textAlign = TextAlign.Center
-                                    )
-
-                                    Spacer(modifier = Modifier.height(4.dp))
-
-                                    // Username
-                                    Surface(
-                                        color = GitGoTheme.colors.primaryBackground,
-                                        shape = RoundedCornerShape(20.dp)
-                                    ) {
-                                        Text(
-                                            text = "@${user.login ?: "unknown"}",
-                                            style = MaterialTheme.typography.bodyLarge,
-                                            fontWeight = FontWeight.Medium,
-                                            color = GitGoTheme.colors.primary,
-                                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
-                                        )
-                                    }
-
-                                    // Bio
-                                    if (!user.bio.isNullOrBlank()) {
-                                        Spacer(modifier = Modifier.height(16.dp))
-                                        Text(
-                                            text = user.bio,
-                                            style = MaterialTheme.typography.bodyLarge,
-                                            color = GitGoTheme.colors.textSecondary,
-                                            textAlign = TextAlign.Center,
-                                            lineHeight = 24.sp
-                                        )
-                                    }
-
-                                    // Stats Row
-                                    Spacer(modifier = Modifier.height(20.dp))
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceEvenly
-                                    ) {
-                                        StatItem(
-                                            count = user.publicRepos ?: 0,
-                                            label = "Repositories"
-                                        )
-                                        StatItem(
-                                            count = user.followers ?: 0,
-                                            label = "Followers"
-                                        )
-                                        StatItem(
-                                            count = user.following ?: 0,
-                                            label = "Following"
-                                        )
-                                    }
-                                }
-                            }
+                        navController.navigate(Destination.LOGIN_SCREEN) {
+                            popUpTo(0) { inclusive = true }
                         }
                     }
-
-                    // User Information
-                    item {
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = GitGoTheme.colors.card
-                            ),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                        ) {
-                            Column(modifier = Modifier.padding(20.dp)) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Surface(
-                                        shape = CircleShape,
-                                        color = GitGoTheme.colors.infoBackground,
-                                        modifier = Modifier.size(36.dp)
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Info,
-                                            contentDescription = null,
-                                            tint = GitGoTheme.colors.info,
-                                            modifier = Modifier
-                                                .size(20.dp)
-                                                .padding(8.dp)
-                                        )
-                                    }
-                                    Spacer(modifier = Modifier.width(12.dp))
-                                    Text(
-                                        text = "Information",
-                                        style = MaterialTheme.typography.titleLarge,
-                                        fontWeight = FontWeight.Bold,
-                                        color = GitGoTheme.colors.textColor
-                                    )
-                                }
-
-                                Spacer(modifier = Modifier.height(16.dp))
-
-                                if (!user.company.isNullOrBlank()) {
-                                    InfoRow(
-                                        icon = Icons.Default.Business,
-                                        label = "Company",
-                                        value = user.company
-                                    )
-                                }
-
-                                if (!user.location.isNullOrBlank()) {
-                                    InfoRow(
-                                        icon = Icons.Default.LocationOn,
-                                        label = "Location",
-                                        value = user.location
-                                    )
-                                }
-
-                                if (!user.email.isNullOrBlank()) {
-                                    InfoRow(
-                                        icon = Icons.Default.Email,
-                                        label = "Email",
-                                        value = user.email
-                                    )
-                                }
-
-                                if (!user.blog.isNullOrBlank()) {
-                                    InfoRow(
-                                        icon = Icons.Default.Link,
-                                        label = "Website",
-                                        value = user.blog,
-                                        isLink = true
-                                    )
-                                }
-
-                                if (!user.twitterUsername.isNullOrBlank()) {
-                                    InfoRow(
-                                        icon = Icons.Default.Tag,
-                                        label = "Twitter",
-                                        value = "@${user.twitterUsername}"
-                                    )
-                                }
-
-                                user.createdAt?.let { date ->
-                                    InfoRow(
-                                        icon = Icons.Default.CalendarMonth,
-                                        label = "Joined",
-                                        value = formatDate(date)
-                                    )
-                                }
-
-                                InfoRow(
-                                    icon = Icons.Default.AccountCircle,
-                                    label = "Account Type",
-                                    value = user.type ?: "User"
-                                )
-                            }
-                        }
-                    }
-
-                    // Repository Stats
-                    item {
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = GitGoTheme.colors.card
-                            ),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                        ) {
-                            Column(modifier = Modifier.padding(20.dp)) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Surface(
-                                        shape = CircleShape,
-                                        color = GitGoTheme.colors.successBackground,
-                                        modifier = Modifier.size(36.dp)
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Folder,
-                                            contentDescription = null,
-                                            tint = GitGoTheme.colors.success,
-                                            modifier = Modifier
-                                                .size(20.dp)
-                                                .padding(8.dp)
-                                        )
-                                    }
-                                    Spacer(modifier = Modifier.width(12.dp))
-                                    Text(
-                                        text = "Repository Stats",
-                                        style = MaterialTheme.typography.titleLarge,
-                                        fontWeight = FontWeight.Bold,
-                                        color = GitGoTheme.colors.textColor
-                                    )
-                                }
-
-                                Spacer(modifier = Modifier.height(16.dp))
-
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                                ) {
-                                    RepoStatCard(
-                                        count = user.publicRepos ?: 0,
-                                        label = "Public Repos",
-                                        icon = Icons.Default.Public,
-                                        color = GitGoTheme.colors.success,
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                    RepoStatCard(
-                                        count = user.ownedPrivateRepos ?: 0,
-                                        label = "Private Repos",
-                                        icon = Icons.Default.Lock,
-                                        color = GitGoTheme.colors.warning,
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                }
-
-                                Spacer(modifier = Modifier.height(12.dp))
-
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                                ) {
-                                    RepoStatCard(
-                                        count = user.publicGists ?: 0,
-                                        label = "Public Gists",
-                                        icon = Icons.Default.Code,
-                                        color = GitGoTheme.colors.info,
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                    RepoStatCard(
-                                        count = user.privateGists ?: 0,
-                                        label = "Private Gists",
-                                        icon = Icons.Default.VisibilityOff,
-                                        color = GitGoTheme.colors.textTertiary,
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-                    // Additional Info
-                    if (user.plan != null) {
-                        item {
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(16.dp),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = GitGoTheme.colors.card
-                                ),
-                                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                            ) {
-                                Column(modifier = Modifier.padding(20.dp)) {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Surface(
-                                            shape = CircleShape,
-                                            color = GitGoTheme.colors.warningBackground,
-                                            modifier = Modifier.size(36.dp)
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Default.Star,
-                                                contentDescription = null,
-                                                tint = GitGoTheme.colors.warning,
-                                                modifier = Modifier
-                                                    .size(20.dp)
-                                                    .padding(8.dp)
-                                            )
-                                        }
-                                        Spacer(modifier = Modifier.width(12.dp))
-                                        Text(
-                                            text = "Plan Information",
-                                            style = MaterialTheme.typography.titleLarge,
-                                            fontWeight = FontWeight.Bold,
-                                            color = GitGoTheme.colors.textColor
-                                        )
-                                    }
-
-                                    Spacer(modifier = Modifier.height(16.dp))
-
-                                    InfoRow(
-                                        icon = Icons.Default.CardMembership,
-                                        label = "Plan",
-                                        value = user.plan.name ?: "Free"
-                                    )
-
-                                    InfoRow(
-                                        icon = Icons.Default.Storage,
-                                        label = "Space",
-                                        value = formatBytes(user.plan.space ?: 0)
-                                    )
-
-                                    user.diskUsage?.let { usage ->
-                                        InfoRow(
-                                            icon = Icons.Default.SdCard,
-                                            label = "Disk Usage",
-                                            value = formatBytes(usage)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    item { Spacer(modifier = Modifier.height(8.dp)) }
-                    item {
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(20.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = GitGoTheme.colors.card
-                            ),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(
-                                        Brush.verticalGradient(
-                                            colors = listOf(
-                                                GitGoTheme.colors.primary.copy(alpha = 0.1f),
-                                                GitGoTheme.colors.card
-                                            )
-                                        )
-                                    ).clickable {
-                                        val context = navController.context
-                                        val prefs = context.getSharedPreferences(
-                                            "auth_prefs",
-                                            Context.MODE_PRIVATE
-                                        ).edit()
-                                        prefs.remove("access_token")
-                                        prefs.apply()
-
-                                        navController.navigate(Destination.LOGIN_SCREEN) {
-                                            popUpTo(navController.graph.startDestinationId) {
-                                                inclusive = true
-                                            }
-                                        }
-                                    }
-                            ) {
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(20.dp),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Logout,
-                                            contentDescription = "Logout",
-                                            tint = GitGoTheme.colors.error,
-                                            modifier = Modifier.size(24.dp)
-                                        )
-                                        Spacer(modifier = Modifier.width(16.dp))
-                                        Text(
-                                            text = "Logout",
-                                            style = MaterialTheme.typography.titleMedium,
-                                            fontWeight = FontWeight.Bold,
-                                            color = GitGoTheme.colors.error
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
+                )
             }
+        }
+    }
+}
 
-            null -> Unit
+
+@Composable
+private fun ProfileContent(
+    user: UserDetailsResponse,
+    onLogoutClick: () -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        item { ProfileHeaderCard(user) }
+        item { UserInfoCard(user) }
+        item { RepoStatsCard(user) }
+
+        if (user.plan != null) {
+            item { PlanInfoCard(user.plan, user.diskUsage) }
+        }
+
+        item { Spacer(modifier = Modifier.height(8.dp)) }
+        item { LogoutCard(onLogoutClick) }
+        item { Spacer(modifier = Modifier.height(24.dp)) }
+    }
+}
+
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+private fun ProfileHeaderCard(user: UserDetailsResponse) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        colors = CardDefaults.cardColors(containerColor = GitGoTheme.colors.card)
+    ) {
+        Box(
+            modifier = Modifier.background(
+                Brush.verticalGradient(
+                    colors = listOf(
+                        GitGoTheme.colors.primary.copy(alpha = 0.1f),
+                        GitGoTheme.colors.card
+                    )
+                )
+            )
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Surface(
+                    modifier = Modifier.size(88.dp),
+                    shape = CircleShape,
+                    color = GitGoTheme.colors.outline,
+                    shadowElevation = 8.dp
+                ) {
+                    GlideImage(
+                        model = user.avatarUrl,
+                        contentDescription = "Avatar",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(2.dp)
+                            .clip(CircleShape)
+                            .border(2.dp, GitGoTheme.colors.surface, CircleShape)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = user.name ?: "Unknown User",
+                    style = GitGoTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = GitGoTheme.colors.textColor,
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Surface(
+                    color = GitGoTheme.colors.primary.copy(alpha = 0.1f),
+                    shape = RoundedCornerShape(20.dp)
+                ) {
+                    Text(
+                        text = "@${user.login ?: "unknown"}",
+                        style = GitGoTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium,
+                        color = GitGoTheme.colors.primary,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
+                    )
+                }
+
+                if (!user.bio.isNullOrBlank()) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = user.bio,
+                        style = GitGoTheme.typography.bodyLarge,
+                        color = GitGoTheme.colors.textSecondary,
+                        textAlign = TextAlign.Center,
+                        lineHeight = 24.sp
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    StatItem(user.publicRepos ?: 0, stringResource(R.string.profile_repos))
+                    StatItem(user.followers ?: 0, stringResource(R.string.profile_followers))
+                    StatItem(user.following ?: 0, stringResource(R.string.profile_following))
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun StatItem(
-    count: Int,
-    label: String
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+private fun UserInfoCard(user: UserDetailsResponse) {
+    SectionCard(
+        title = stringResource(R.string.profile_info_title),
+        icon = Icons.Default.Info,
+        iconColor = GitGoTheme.colors.info
     ) {
-        Text(
-            text = formatCount(count),
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            color = GitGoTheme.colors.textColor
-        )
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = GitGoTheme.colors.textSecondary
+        if (!user.company.isNullOrBlank()) {
+            InfoRow(Icons.Default.Business, stringResource(R.string.profile_label_company), user.company)
+        }
+        if (!user.location.isNullOrBlank()) {
+            InfoRow(Icons.Default.LocationOn, stringResource(R.string.profile_label_location), user.location)
+        }
+        if (!user.email.isNullOrBlank()) {
+            InfoRow(Icons.Default.Email, stringResource(R.string.profile_label_email), user.email)
+        }
+        if (!user.blog.isNullOrBlank()) {
+            InfoRow(Icons.Default.Link, stringResource(R.string.profile_label_website), user.blog, isLink = true)
+        }
+        if (!user.twitterUsername.isNullOrBlank()) {
+            InfoRow(Icons.Default.Tag, stringResource(R.string.profile_label_twitter), "@${user.twitterUsername}")
+        }
+
+        user.createdAt?.let {
+            InfoRow(Icons.Default.CalendarMonth, stringResource(R.string.profile_label_joined), ProfileFormatter.date(it))
+        }
+
+        InfoRow(
+            Icons.Default.AccountCircle,
+            stringResource(R.string.profile_label_type),
+            user.type ?: stringResource(R.string.profile_default_type)
         )
     }
 }
 
 @Composable
-private fun InfoRow(
-    icon: ImageVector,
-    label: String,
-    value: String,
-    isLink: Boolean = false
-) {
-    Row(
+private fun RepoStatsCard(user: UserDetailsResponse) {
+    SectionCard(
+        title = stringResource(R.string.profile_repo_stats_title),
+        icon = Icons.Default.Folder,
+        iconColor = GitGoTheme.colors.success
+    ) {
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            RepoStatItem(
+                user.publicRepos ?: 0,
+                stringResource(R.string.profile_stat_public_repos),
+                Icons.Default.Public,
+                GitGoTheme.colors.success,
+                Modifier.weight(1f)
+            )
+            RepoStatItem(
+                user.ownedPrivateRepos ?: 0,
+                stringResource(R.string.profile_stat_private_repos),
+                Icons.Default.Lock,
+                GitGoTheme.colors.warning,
+                Modifier.weight(1f)
+            )
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            RepoStatItem(
+                user.publicGists ?: 0,
+                stringResource(R.string.profile_stat_public_gists),
+                Icons.Default.Code,
+                GitGoTheme.colors.info,
+                Modifier.weight(1f)
+            )
+            RepoStatItem(
+                user.privateGists ?: 0,
+                stringResource(R.string.profile_stat_private_gists),
+                Icons.Default.VisibilityOff,
+                GitGoTheme.colors.textSecondary,
+                Modifier.weight(1f)
+            )
+        }
+    }
+}
+
+@Composable
+private fun PlanInfoCard(plan: UserDetailsResponse.Plan, diskUsage: Int?) {
+    SectionCard(
+        title = stringResource(R.string.profile_plan_title),
+        icon = Icons.Default.Star,
+        iconColor = GitGoTheme.colors.warning
+    ) {
+        InfoRow(
+            Icons.Default.CardMembership,
+            stringResource(R.string.profile_label_plan),
+            plan.name ?: stringResource(R.string.profile_plan_free)
+        )
+
+        InfoRow(
+            Icons.Default.Storage,
+            stringResource(R.string.profile_label_space),
+            ProfileFormatter.bytes(plan.space ?: 0)
+        )
+
+        diskUsage?.let {
+            InfoRow(
+                Icons.Default.SdCard,
+                stringResource(R.string.profile_label_disk_usage),
+                ProfileFormatter.bytes(it)
+            )
+        }
+    }
+}
+
+@Composable
+private fun LogoutCard(onClick: () -> Unit) {
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = GitGoTheme.colors.card),
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = label,
-            tint = GitGoTheme.colors.iconSecondary,
-            modifier = Modifier.size(20.dp)
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = GitGoTheme.colors.textSecondary,
-            fontWeight = FontWeight.Medium,
-            modifier = Modifier.width(100.dp)
-        )
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyMedium,
-            color = if (isLink) GitGoTheme.colors.primary else GitGoTheme.colors.textColor,
-            fontWeight = FontWeight.Normal,
-            modifier = Modifier.weight(1f),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
+        Row(
+            modifier = Modifier.padding(20.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(Icons.Default.Logout, null, tint = GitGoTheme.colors.error)
+            Spacer(modifier = Modifier.width(16.dp))
+            Text(
+                text = stringResource(R.string.btn_logout),
+                style = GitGoTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = GitGoTheme.colors.error
+            )
+        }
+    }
+}
+
+
+@Composable
+private fun SectionCard(
+    title: String,
+    icon: ImageVector,
+    iconColor: Color,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = GitGoTheme.colors.card),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Column(modifier = Modifier.padding(20.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Surface(
+                    shape = CircleShape,
+                    color = iconColor.copy(alpha = 0.1f),
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    Icon(icon, null, tint = iconColor, modifier = Modifier.padding(8.dp))
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(title, style = GitGoTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = GitGoTheme.colors.textColor)
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            content()
+        }
     }
 }
 
 @Composable
-private fun RepoStatCard(
-    count: Int,
-    label: String,
-    icon: ImageVector,
-    color: androidx.compose.ui.graphics.Color,
-    modifier: Modifier = Modifier
-) {
+private fun StatItem(count: Int, label: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(ProfileFormatter.count(count), style = GitGoTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = GitGoTheme.colors.textColor)
+        Text(label, style = GitGoTheme.typography.bodyMedium, color = GitGoTheme.colors.textSecondary)
+    }
+}
+
+@Composable
+private fun RepoStatItem(count: Int, label: String, icon: ImageVector, color: Color, modifier: Modifier) {
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(12.dp),
         color = color.copy(alpha = 0.1f),
-        border = androidx.compose.foundation.BorderStroke(
-            1.dp,
-            color.copy(alpha = 0.3f)
-        )
+        border = BorderStroke(1.dp, color.copy(alpha = 0.3f))
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = label,
-                tint = color,
-                modifier = Modifier.size(24.dp)
-            )
+        Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(icon, null, tint = color, modifier = Modifier.size(24.dp))
             Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = formatCount(count),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = GitGoTheme.colors.textColor
-            )
-            Text(
-                text = label,
-                style = MaterialTheme.typography.bodySmall,
-                color = GitGoTheme.colors.textSecondary,
-                textAlign = TextAlign.Center,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            Text(ProfileFormatter.count(count), style = GitGoTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = GitGoTheme.colors.textColor)
+            Text(label, style = GitGoTheme.typography.bodySmall, color = GitGoTheme.colors.textSecondary, textAlign = TextAlign.Center, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
     }
 }
 
-private fun formatCount(count: Int): String {
-    return when {
-        count >= 1_000_000 -> "${(count / 1_000_000.0).format(1)}M"
-        count >= 1_000 -> "${(count / 1_000.0).format(1)}K"
-        else -> count.toString()
+@Composable
+private fun InfoRow(icon: ImageVector, label: String, value: String, isLink: Boolean = false) {
+    Row(modifier = Modifier.padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+        Icon(icon, null, tint = GitGoTheme.colors.iconSecondary, modifier = Modifier.size(20.dp))
+        Spacer(modifier = Modifier.width(16.dp))
+        Text(label, style = GitGoTheme.typography.bodyMedium, color = GitGoTheme.colors.textSecondary, modifier = Modifier.width(100.dp))
+        Text(value, style = GitGoTheme.typography.bodyMedium, color = if (isLink) GitGoTheme.colors.primary else GitGoTheme.colors.textColor, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
     }
 }
 
-private fun formatBytes(bytes: Int): String {
-    return when {
-        bytes >= 1_073_741_824 -> "${(bytes / 1_073_741_824.0).format(1)} GB"
-        bytes >= 1_048_576 -> "${(bytes / 1_048_576.0).format(1)} MB"
-        bytes >= 1024 -> "${(bytes / 1024.0).format(1)} KB"
-        else -> "$bytes bytes"
+@Composable
+private fun LoadingView() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        CircularProgressIndicator(color = GitGoTheme.colors.primary)
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(stringResource(R.string.profile_loading), color = GitGoTheme.colors.textSecondary)
     }
 }
 
-private fun formatDate(dateString: String): String {
-    return try {
-        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
-        val outputFormat = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault())
-        val date = inputFormat.parse(dateString)
-        date?.let { outputFormat.format(it) } ?: dateString
-    } catch (e: Exception) {
-        dateString
+@Composable
+private fun ErrorView(message: String) {
+    Column(
+        modifier = Modifier.fillMaxSize().padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(Icons.Default.Error, null, tint = GitGoTheme.colors.error, modifier = Modifier.size(48.dp))
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(stringResource(R.string.profile_error_title), style = GitGoTheme.typography.titleLarge, color = GitGoTheme.colors.textColor)
+        Text(message, color = GitGoTheme.colors.textSecondary, textAlign = TextAlign.Center)
     }
 }
-
-private fun Double.format(digits: Int) = "%.${digits}f".format(this).trimEnd('0').trimEnd('.')
