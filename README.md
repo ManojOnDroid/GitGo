@@ -11,12 +11,21 @@ Built to demonstrate **modern Android development practices**, it focuses on a s
 ## 📱 App Demo
 
 <div align="center">
-  <img src="art/demo.gif" width="250" />
+  <table>
+    <tr>
+      <td align="center"><b>Light Mode</b></td>
+      <td align="center"><b>Dark Mode</b></td>
+    </tr>
+    <tr>
+      <td><img src="art/demo_light.gif" width="250" /></td>
+      <td><img src="art/demo_dark.gif" width="250" /></td>
+    </tr>
+  </table>
 </div>
 
 ## 📸 Screenshots
 
-| Login | Home | Search (Empty) | Search (Results) | Details |
+| Login | Home | Search | Search (Results) | Details |
 |:---:|:---:|:---:|:---:|:---:|
 | <img src="art/login.png" width="200"/> | <img src="art/home.png" width="200"/> | <img src="art/search.png" width="200"/> | <img src="art/search2.png" width="200"/> | <img src="art/details.png" width="200"/> |
 
