@@ -8,13 +8,17 @@
 
 Built to demonstrate **modern Android development practices**, it focuses on a scalable architecture, secure authentication flows, and a polished UI.
 
-## 📱 Screenshots & Demo
+## 📱 App Demo
 
-| Login & Auth | Home & Quick Actions | Search & Pagination | Repository Details |
-|:---:|:---:|:---:|:---:|
-| <img src="art/login.png" width="200"/> | <img src="art/home.png" width="200"/> | <img src="art/search.png" width="200"/> | <img src="art/details.png" width="200"/> |
+<div align="center">
+  <img src="art/demo.gif" width="250" />
+</div>
 
-*(Note: Replace `art/login.png`, etc., with your actual file names)*
+## 📸 Screenshots
+
+| Login | Home | Search (Empty) | Search (Results) | Details |
+|:---:|:---:|:---:|:---:|:---:|
+| <img src="art/login.png" width="200"/> | <img src="art/home.png" width="200"/> | <img src="art/search.png" width="200"/> | <img src="art/search2.png" width="200"/> | <img src="art/details.png" width="200"/> |
 
 ## 🛠 Tech Stack
 
@@ -41,7 +45,32 @@ The app follows a modularized, layered architecture:
 
 ```mermaid
 graph TD
-    UI[UI Layer (Compose)] --> VM[ViewModel]
-    VM --> Repo[Repository]
-    Repo --> Remote[Remote Data Source (Retrofit)]
-    Repo --> Local[Local Data Source (Preferences)]
+    UI["UI Layer (Compose)"] --> VM["ViewModel"]
+    VM --> Repo["Repository"]
+    Repo --> Remote["Remote Data Source (Retrofit)"]
+```
+## 🚀 Getting Started
+
+To build this project locally, you need to provide your own GitHub OAuth credentials.
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/ManojOnDroid/GitGo.git
+   ```
+2. **Create a local.properties file in the project root directory.**
+
+3. **Add your GitHub Developer Keys:**
+
+``` properties
+GITHUB_CLIENT_ID="your_client_id_here"
+GITHUB_CLIENT_SECRET="your_client_secret_here"
+```
+
+> Make sure your GitHub OAuth App has the redirect URI set to:
+> `gitgo://callback`
+
+4. **Sync Gradle, then Build and Run in Android Studio.**
+
+## 📄 License
+This project is licensed under the MIT License.
+See the LICENSE file for details.
